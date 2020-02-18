@@ -1,0 +1,6 @@
+##### Python #####
+__pycache__/
+
+
+# SQLite DB byDjango
+.sqlite3
