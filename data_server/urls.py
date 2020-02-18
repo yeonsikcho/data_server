@@ -15,8 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+import data.views.stockprice as spv 
 
 urlpatterns = [
+	path('', spv.loadmain),
 	path('data/', include('data.urls')),
 	path('admin/', admin.site.urls),
 ]

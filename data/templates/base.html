@@ -2,7 +2,7 @@
 <head>
 	{% load static %}
 	<title>E.Cho Data Server</title>
-
+	<link rel="icon" type="image/png" href="{% static 'favicon.png' %}" />
 	<!-- jQuery Package-->
 	<script src="{% static 'packages/jquery.min.js' %}"></script>
 
@@ -37,7 +37,7 @@
 			<li class="dropdown">
 			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Data <span class="caret"></span></a>
 			  <ul class="dropdown-menu">
-				<li><a href="#">Listed Stock List</a></li>
+				<li><a href="{% url 'data:stockprice' %}">Listed Stock List</a></li>
 			  </ul>
 			</li>
 		  </ul>

@@ -25,7 +25,7 @@ SECRET_KEY = 'i580=+emo#hq#vfag^6ir3p%4b*g9i1d_0jhzq4pzgqn1o$wg*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1","eric-cho.com", "118.33.18.45"]
 
 
 # Application definition
