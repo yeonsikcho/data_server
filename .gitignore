@@ -4,3 +4,6 @@ __pycache__/
 
 # SQLite DB byDjango
 .sqlite3
+
+#analytics.js
+data/static/packages/analytics.js
