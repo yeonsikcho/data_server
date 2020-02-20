@@ -1,6 +1,8 @@
 ##### Python #####
 __pycache__/
 
+#dbcon
+data/static/dbcon.py
 
 # SQLite DB byDjango
 .sqlite3
@@ -8,5 +10,3 @@ __pycache__/
 #analytics.js
 data/static/packages/analytics.js
 
-#dbcon
-data/static/dbcon.py
