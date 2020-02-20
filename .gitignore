@@ -9,3 +9,4 @@ __pycache__/
 data/static/packages/analytics.js
 
 #dbcon
+data/static/dbcon.py
