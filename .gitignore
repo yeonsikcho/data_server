@@ -7,3 +7,5 @@ __pycache__/
 
 #analytics.js
 data/static/packages/analytics.js
+
+#dbcon

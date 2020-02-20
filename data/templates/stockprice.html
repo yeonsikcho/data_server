@@ -1,5 +1,95 @@
 {% extends "base.html" %}
+{% load static from staticfiles %}
+
+{% block head %}
+<link data-jsfiddle="common" rel="stylesheet" media="screen" href="{% static 'packages/handsontable/handsontable.full.css' %}">
+<script data-jsfiddle="common" src="{% static 'packages/handsontable/handsontable.full.js' %}"></script>
+{% endblock %}
 
 {% block main %}
-<p>Stockprice file</p>
+<h3>Korean Stock Prices</h3>
+<div id="companyname"></div>
+<button type="button", class = "btn", onclick = "add_stock()">Add Company</button>
+<div style = "margin-top:10px" id="dates"></div>
+<button type="button", class = "btn", onclick = "get_prices()">Show Prices</button>
+
+<div style = "margin-top:10px" id="prices"></div>
+<script>
+var container = document.getElementById('companyname');
+var companyname_hot = new Handsontable(container, {licenseKey:'non-commercial-and-evaluation',
+  minCols: 1, maxCols: 1,
+  minRows: 1, maxRows: 1,
+  colHeaders: ['Company Name'],
+  colWidths:[400],
+  className: "htLeft",
+  columns: [{type:'autocomplete'}],
+});
+
+$.ajax({
+url: "{% url 'data:spvget_companylist' %}",
+dataType: 'json',
+success: function (data) {
+  companyname_hot.setCellMeta(0,0,'source',data.companylist);
+}})
+
+var container = document.getElementById('dates');
+var dates_hot = new Handsontable(container, {licenseKey:'non-commercial-and-evaluation',
+  data:[['2019-01-01','2019-12-31']],
+  minCols: 2, maxCols: 2,
+  minRows: 1, maxRows: 1,
+  colHeaders: ['Start Date', 'End Date'],
+  colWidths:200,
+  className: "htCenter",
+  columns: [{validator:datevalidator, allowInvalid:false},{validator:datevalidator, allowInvalid:false}]
+});
+
+var max_stocks = 3;
+
+var container = document.getElementById('prices');
+var prices_hot = new Handsontable(container, {licenseKey:'non-commercial-and-evaluation',
+  data:[['Stock ID']],
+  minCols: 1, 
+  maxCols: max_stocks+1, //max_stocks + tradedate column
+  minRows: 1,
+  colWidths:100,
+  className: "htLeft",
+  cells: function (row, col) {return {'readOnly':true};}
+});
+
+function datevalidator(s, callback){
+  isdate = moment(s, 'YYYY-MM-DD',true).isValid();
+  if (isdate){callback(true);}
+  else{callback(false);}
+}
+
+function add_stock(){
+  var company = companyname_hot.getDataAtCell(0,0);
+  var res = company.split(": ")
+  if (company == null){
+    alert('No stock selected');
+    return;
+  }
+  n_cols = prices_hot.countCols();
+  console.log(n_cols);
+  if (n_cols==max_stocks + 1){
+    alert('Maximum'+max_stocks+'stocks allowed');
+    return;
+  }else{
+    prices_hot.setDataAtCell(0, n_cols, res[0]);
+  }
+}
+
+function get_prices(){
+$.ajax({
+  url: "{% url 'data:spvget_prices' %}",
+  data: {'dates': JSON.stringify(dates_hot.getDataAtRow(0)),'stock_list': JSON.stringify(prices_hot.getDataAtRow(0))},
+  dataType: 'json',
+  success: function (data) {
+    prices_hot.loadData(data.prices);
+  }})
+}
+
+
+
+</script>
 {% endblock %}
