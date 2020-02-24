@@ -7,10 +7,85 @@
 {% endblock %}
 
 {% block main %}
-<h3>Korean Stock Prices</h3>
+
+<h3>Download Korean Stock Prices</h3>
+	<div class = "row">
+	<div class="col-sm-6">
+		<div id="parameters"></div>
+		<div style = "margin-top:10px" id="download_dates"></div>
+		<button type="button", class = "btn", onclick = "download_prices()">Download</button>
+	</div>
+	<div class = "col-sm-6"><div id="parameters2"></div></div>
+	
+	</div>
+
+<script>
+function datevalidator(s, callback){
+  isdate = moment(s, 'YYYY-MM-DD',true).isValid();
+  if (isdate){callback(true);}
+  else{callback(false);}
+}
+
+var container = document.getElementById('parameters');
+var parameters_hot = new Handsontable(container, {licenseKey:'non-commercial-and-evaluation',
+  data:[['KOSPI+KOSDAQ','monthly','csv']],
+  minCols: 3, maxCols: 3,
+  minRows: 1, maxRows: 1,
+  colHeaders: ['Scope','Frequency','Format'],
+  colWidths:[200,100,100],
+  className: "htCenter",
+  columns: [{type:'dropdown', source:['KOSPI+KOSDAQ','KOSPI','KOSDAQ']},{type:'dropdown', source:['monthly','yearly']},{type:'dropdown', source:['csv','excel']}],
+});
+
+var container = document.getElementById('parameters2');
+var parameters2_hot = new Handsontable(container, {licenseKey:'non-commercial-and-evaluation',
+  data:[[false,'Opening Price'],[false,'Low Price'],[false,'High Price'],[false,'Closing Price'],[true,'Adjusted Closing Price'],[true,'Shares Outstanding']],
+  minCols: 2, maxCols: 2,
+  minRows: 6, maxRows: 6,
+  colHeaders: ['','Data'],
+  colWidths:[50,200],
+  className: ["htCenter"],
+  columns: [{type:'checkbox'},{readOnly:true}],
+});
+
+var container = document.getElementById('download_dates');
+var download_dates_hot = new Handsontable(container, {licenseKey:'non-commercial-and-evaluation',
+  data:[['2019-01-01','2019-12-31']],
+  minCols: 2, maxCols: 2,
+  minRows: 1, maxRows: 1,
+  colHeaders: ['Start Date', 'End Date'],
+  colWidths:200,
+  className: "htCenter",
+  columns: [{validator:datevalidator, allowInvalid:false},{validator:datevalidator, allowInvalid:false}]
+});
+
+function download_prices(){
+$.ajax({
+    url: "{% url 'data:spvcreate_data' %}",
+    data: {parameters:JSON.stringify(parameters_hot.getData()),
+    parameters2:JSON.stringify(parameters2_hot.getData()),
+    download_dates:JSON.stringify(download_dates_hot.getData()),
+    },
+    dataType: 'json',
+    success: function (data) {
+		a = document.createElement('a');
+		a.href = "{% url 'data:spvdownload_data' %}?path="+data.filename;
+		a.click();
+    }
+  })
+
+}
+
+</script>
+
+
+
+<hr>
+
+<h3>Explore Korean Stock Prices</h3>
 <div id="companyname"></div>
 <button type="button", class = "btn", onclick = "add_stock()">Add Company</button>
-<div style = "margin-top:10px" id="dates"></div>
+<div style = "margin-top:10px" id="explore_dates"></div>
 <button type="button", class = "btn", onclick = "get_prices()">Show Prices</button>
 
 <div style = "margin-top:10px" id="prices"></div>
@@ -32,8 +107,8 @@ success: function (data) {
   companyname_hot.setCellMeta(0,0,'source',data.companylist);
 }})
 
-var container = document.getElementById('dates');
-var dates_hot = new Handsontable(container, {licenseKey:'non-commercial-and-evaluation',
+var container = document.getElementById('explore_dates');
+var explore_dates_hot = new Handsontable(container, {licenseKey:'non-commercial-and-evaluation',
   data:[['2019-01-01','2019-12-31']],
   minCols: 2, maxCols: 2,
   minRows: 1, maxRows: 1,
@@ -56,11 +131,6 @@ var prices_hot = new Handsontable(container, {licenseKey:'non-commercial-and-eva
   cells: function (row, col) {return {'readOnly':true};}
 });
 
-function datevalidator(s, callback){
-  isdate = moment(s, 'YYYY-MM-DD',true).isValid();
-  if (isdate){callback(true);}
-  else{callback(false);}
-}
 
 function add_stock(){
   var company = companyname_hot.getDataAtCell(0,0);
@@ -82,7 +152,7 @@ function add_stock(){
 function get_prices(){
 $.ajax({
   url: "{% url 'data:spvget_prices' %}",
-  data: {'dates': JSON.stringify(dates_hot.getDataAtRow(0)),'stock_list': JSON.stringify(prices_hot.getDataAtRow(0))},
+  data: {'dates': JSON.stringify(explore_dates_hot.getDataAtRow(0)),'stock_list': JSON.stringify(prices_hot.getDataAtRow(0))},
   dataType: 'json',
   success: function (data) {
     prices_hot.loadData(data.prices);
