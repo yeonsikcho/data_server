@@ -59,8 +59,8 @@ def create_data(request):
 		filename = str(uuid.uuid1())+".csv"
 		df.to_csv(f"files/{filename}", index = False)
 	if format == "excel":
-		filename = str(uuid.uuid(1))+".xlsx"
-		df.to_execl(f"files/{filename}", index = False)
+		filename = str(uuid.uuid1())+".xlsx"
+		df.to_excel(f"files/{filename}", index = False)
 	return JsonResponse({'filename':filename})
 	
 def download_data(request):

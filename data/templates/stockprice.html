@@ -8,7 +8,13 @@
 
 {% block main %}
 
+
 <h3>Download Korean Stock Prices</h3>
+<ul>
+<li>Stock prices available after 2009-12-30</li>
+<li>Data includes preferred stocks</li>
+<li>For details on data source and adjusted price computation refer to my blog</li>
+</ul>
 	<div class = "row">
 	<div class="col-sm-6">
 		<div id="parameters"></div>
@@ -83,6 +89,10 @@ $.ajax({
 <hr>
 
 <h3>Explore Korean Stock Prices</h3>
+<ul>
+<li>Stock prices available after 2009-12-30</li>
+<li>Closing prices up to 3 stocks</li>
+</ul>
 <div id="companyname"></div>
 <button type="button", class = "btn", onclick = "add_stock()">Add Company</button>
 <div style = "margin-top:10px" id="explore_dates"></div>
