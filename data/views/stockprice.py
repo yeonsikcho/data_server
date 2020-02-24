@@ -28,6 +28,7 @@ def get_prices(request):
 		else:
 			df = pd.merge(df, pd.DataFrame(list(cursor.fetchall()), columns = ['tradedate', stockid]), how = "outer", on = "tradedate")
 	prices = [stock_list]+df.values.tolist()
+	con.close()
 	return JsonResponse({'prices':prices})
 	
 
@@ -61,6 +62,7 @@ def create_data(request):
 	if format == "excel":
 		filename = str(uuid.uuid1())+".xlsx"
 		df.to_excel(f"files/{filename}", index = False)
+	con.close()
 	return JsonResponse({'filename':filename})
 	
 def download_data(request):
