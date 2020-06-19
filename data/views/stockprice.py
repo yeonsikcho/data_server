@@ -11,7 +11,7 @@ def loadmain(request):
 
 def get_companylist(request):
 	con, cursor = get_con()
-	cursor.execute("select * from companylist")
+	cursor.execute("select * from eric.companylist")
 	result = cursor.fetchall()
 	companylist = [f"{r[0]}: {r[1]}" for r in result]
 	con.close()
@@ -22,7 +22,7 @@ def get_prices(request):
 	start_dt, end_dt = json.loads(request.GET.get('dates',None))
 	con, cursor = get_con()
 	for i,stockid in enumerate(stock_list[1:]):
-		cursor.execute("select tradedate, cls_prc from stockprices where isu_cd = %s and tradedate>=%s and tradedate<=%s", [stockid, start_dt, end_dt])
+		cursor.execute("select tradedate, cls_prc from valuation.stockprices where isu_cd = %s and tradedate>=%s and tradedate<=%s", [stockid, start_dt, end_dt])
 		if i == 0:
 			df = pd.DataFrame(list(cursor.fetchall()), columns = ['tradedate', stockid])
 		else:
@@ -54,7 +54,7 @@ def create_data(request):
 	if frequency == "yearly":
 		conditions.append(f"year_end = 1")
 	con, cursor = get_con()
-	cursor.execute(f"select {', '.join(columns)} from stockprices where {' and '.join(conditions)}")
+	cursor.execute(f"select {', '.join(columns)} from valuation.stockprices where {' and '.join(conditions)}")
 	df = pd.DataFrame(list(cursor.fetchall()), columns = columns)
 	if format == "csv":
 		filename = str(uuid.uuid1())+".csv"
